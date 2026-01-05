@@ -3,7 +3,7 @@
 Small Node.js project demonstrating a job queue and background worker pattern (BullMQ + Redis).
 
 ## Status
-Work in progress — README is minimal so you can update as the project evolves.
+Work in progress — README is minimal so updating as the project evolves.
 
 ## Quick start
 1. Open terminal in the project folder:
