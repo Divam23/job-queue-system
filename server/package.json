@@ -1,0 +1,28 @@
+{
+  "name": "job-queue-and-background-worker-system",
+  "version": "1.0.0",
+  "description": "a job queue system for backend project",
+  "keywords": [
+    "backend",
+    "job",
+    "queue"
+  ],
+  "license": "ISC",
+  "author": "Divam",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bullmq": "^5.66.4",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "ioredis": "^5.8.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
