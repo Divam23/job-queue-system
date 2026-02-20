@@ -6,7 +6,8 @@ configDotenv()
 const redis = new Redis({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASS
+    // password: process.env.REDIS_PASS,
+    maxRetriesPerRequest: null
 })
 
 redis.on("connect", ()=>{
@@ -14,7 +15,8 @@ redis.on("connect", ()=>{
 })
 
 redis.on("error", (error)=>{
-    console.log(error)
+    console.log("Error hai bhosdi: ",error)
+    
 })
 
 export default redis;

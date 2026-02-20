@@ -1,4 +1,4 @@
-import {Queue, Worker} from "bullmq";
+import {Queue} from "bullmq";
 
 const emailQueue = new Queue('email-queue', {
     connection:{
