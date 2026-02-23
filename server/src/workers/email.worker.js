@@ -1,27 +1,49 @@
 import { Worker } from "bullmq";
-import IORedis from "ioredis";
+import redisConnection from "../config/redis.js"
 import { configDotenv } from "dotenv";
+import { Job } from "../models/job.model.js";
+import { connectDB } from "../config/db.js";
 
 configDotenv();
 
-const connection = new IORedis({
-  host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT,
-  maxRetriesPerRequest: null,
-});
+await connectDB();
+
+const connection = redisConnection;
 
 console.log("Worker is ready and is waiting for jobs")
 const worker = new Worker(
-    "email-queue",
-    async(job)=>{
-        console.log("Processing Job ",job.id)
-        console.log("Job Data: ", job.data)
+  "email-queue",
+  async (jobQueue) => {
+    const { mongoJobId } = jobQueue.data;
 
-        await new Promise((resolve)=> setTimeout(resolve, 3000))
 
-        console.log("Job completed:", job.id);
+    const job = await Job.findById(mongoJobId)
+    if (!job) return;
+
+    job.status = "PROCESSING";
+    await job.save();
+
+    try {
+      console.log("Processing Job ", job.id)
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      job.status = "COMPLETED";
+      job.processedAt = new Date();
+      await job.save();
+      console.log("Ho gya job");
+      return { success: true }; 
+
+    } catch (error) {
+      job.status = "FAILED";
+      job.failedReason = error.message;
+      job.processedAt = new Date();
+      job.retryCount+=1;
+      await job.save();
+
+      throw error;
+    }
+
   },
-  { connection }
+  { connection, concurrency: 5 }
 );
 
 // Event listeners

@@ -28,7 +28,13 @@ const jobSchema = new Schema({
         type: Number,
         default: 0
     },
+    result: {
+      type: Schema.Types.Mixed,
+    },
 
+    failedReason: {
+      type: String,
+    },
     errorLogs: [
         {
             message: String,
@@ -44,7 +50,9 @@ const jobSchema = new Schema({
     },
 
     scheduledAt: {
-        type: Date
+        type: Date,
+        default: Date.now,
+        index:true
     }
 }, 
 {

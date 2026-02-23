@@ -1,10 +1,8 @@
 import {Queue} from "bullmq";
+import redisConnection from "../config/redis.js"
 
 const emailQueue = new Queue('email-queue', {
-    connection:{
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT
-    },
+    connection:{redisConnection},
 
 })
 
