@@ -60,7 +60,7 @@ const jobSchema = new Schema({
 }
 );
 
-jobSchema.index({status: 1, priority: -1, createdAt: 1});
+jobSchema.index({status: 1, priority: -1, createdAt: -1});
 
 const Job = mongoose.model("Job", jobSchema);
 

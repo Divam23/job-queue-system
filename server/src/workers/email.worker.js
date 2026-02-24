@@ -25,20 +25,19 @@ const worker = new Worker(
 
     try {
       console.log("Processing Job ", job.id)
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      await new Promise((resolve) => setTimeout(resolve, 5000))
       job.status = "COMPLETED";
       job.processedAt = new Date();
       await job.save();
       console.log("Ho gya job");
-      return { success: true }; 
+      return { success: true };
 
     } catch (error) {
-      job.status = "FAILED";
       job.failedReason = error.message;
       job.processedAt = new Date();
-      job.retryCount+=1;
+      job.retryCount = jobQueue.attemptsMade;
+      job.status = "FAILED";
       await job.save();
-
       throw error;
     }
 
@@ -47,12 +46,29 @@ const worker = new Worker(
 );
 
 // Event listeners
-worker.on("completed", (job) => {
-  console.log(`Job ${job.id} completed successfully`);
+worker.on("completed", (bullJob) => {
+  console.log(`Job ${bullJob.id} completed successfully`);
 });
 
-worker.on("failed", (job, err) => {
-  console.error(`Job ${job.id} failed:`, err.message);
+worker.on("failed", async(bullJob, err) => {
+  await Job.findByIdAndUpdate(
+    bullJob.data.mongoJobId,
+    {
+      $push:{
+        errorLogs:{
+          message: err.message,
+          stack: err.stack,
+          timestamp:new Date()
+        }
+      }
+    }
+  )
+  console.error(`Job ${bullJob.id} failed:`, err.message);
+  console.log(`Attempt ${bullJob.attemptsMade}`)
+
+  if (bullJob.attemptsMade >= bullJob.opts.attempts) {
+    console.log("Max retries reached.")
+  }
 });
 
 worker.on("error", (err) => {
