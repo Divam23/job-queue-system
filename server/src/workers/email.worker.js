@@ -3,6 +3,7 @@ import redisConnection from "../config/redis.js"
 import { configDotenv } from "dotenv";
 import { Job } from "../models/job.model.js";
 import { connectDB } from "../config/db.js";
+import { isValidJobStatus } from "../utils/jobState.js";
 
 configDotenv();
 
@@ -20,8 +21,10 @@ const worker = new Worker(
     const job = await Job.findById(mongoJobId)
     if (!job) return;
 
-    job.status = "PROCESSING";
-    await job.save();
+    if(isValidJobStatus(job.status, "PROCESSING")){
+      job.status = "PROCESSING";
+      await job.save();
+    }
 
     try {
       console.log("Processing Job ", job.id)
@@ -35,7 +38,7 @@ const worker = new Worker(
     } catch (error) {
       job.failedReason = error.message;
       job.processedAt = new Date();
-      job.retryCount = jobQueue.attemptsMade;
+      //job.retryCount = jobQueue.attemptsMade;
       job.status = "FAILED";
       await job.save();
       throw error;
@@ -60,7 +63,8 @@ worker.on("failed", async(bullJob, err) => {
           stack: err.stack,
           timestamp:new Date()
         }
-      }
+      },
+      $inc: {retryCount:1}
     }
   )
   console.error(`Job ${bullJob.id} failed:`, err.message);

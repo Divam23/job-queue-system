@@ -35,6 +35,10 @@ const jobSchema = new Schema({
     failedReason: {
       type: String,
     },
+    delay:{
+        type: Number,
+        default: 0
+    },
     errorLogs: [
         {
             message: String,

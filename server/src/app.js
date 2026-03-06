@@ -5,6 +5,7 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 //routes import
 import jobsRouter from "../src/routes/jobs.routes.js"
+import adminRouter from "../src/routes/admin.routes.js"
 
 const app = express();
 
@@ -24,7 +25,10 @@ app.get("/health", (req, res)=>{
 })
 
 //jobs route
-app.use("/api/v1", jobsRouter)
+app.use("/api/v1/jobs", jobsRouter)
+
+//admin route
+app.use("/api/v1/admin", adminRouter)
 
 
 app.use(errorMiddleware)
