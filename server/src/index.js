@@ -1,8 +1,6 @@
 import {app} from "./app.js"
 import { connectDB } from "./config/db.js";
-import redis from "./config/redis.js";
 import {configDotenv} from "dotenv";
-import { Job } from "./models/job.model.js";
 
 configDotenv();
 

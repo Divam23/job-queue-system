@@ -14,6 +14,7 @@ const connection = redisConnection;
 console.log("Worker is ready and is waiting for jobs")
 const worker = new Worker(
   "email-queue",
+  
   async (jobQueue) => {
     const { mongoJobId } = jobQueue.data;
 
@@ -21,13 +22,20 @@ const worker = new Worker(
     const job = await Job.findById(mongoJobId)
     if (!job) return;
 
+    if(job.status === "COMPLETED") return;
+
     if(isValidJobStatus(job.status, "PROCESSING")){
       job.status = "PROCESSING";
       await job.save();
     }
 
+    const WORKER_ID = process.pid;
+    console.log(`worker id is: ${WORKER_ID}`)
+
+    
     try {
       console.log("Processing Job ", job.id)
+      console.log(`Worker id: ${WORKER_ID} processing job: ${job.id}`);
       await new Promise((resolve) => setTimeout(resolve, 5000))
       job.status = "COMPLETED";
       job.processedAt = new Date();
@@ -45,7 +53,7 @@ const worker = new Worker(
     }
 
   },
-  { connection, concurrency: 5 }
+  { connection, concurrency: 5, lockDuration: 50000 }
 );
 
 // Event listeners

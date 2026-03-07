@@ -22,8 +22,8 @@ Work in progress — README is minimal so updating as the project evolves.
 PORT=5000(example)
 REDIS_USER=default
 REDIS_PASS=your_redis_password
-REDIS_HOST=localhost
-REDIS_PORT=6379(example)
+REDIS_HOST=redis
+REDIS_PORT=6379
 
 ## How to use
 - Enqueue jobs from the server using the provided queue modules (e.g. `src/queues/email.queue.js`).

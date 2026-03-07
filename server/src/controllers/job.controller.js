@@ -19,15 +19,21 @@ const createJob = asyncHandler(async (req, res) => {
         delay: delay || 0
     });
 
+
     await emailQueue.add(
         jobType,
-        { mongoJobId: job._id },
+        { 
+            mongoJobId: job._id.toString(),
+            ...payload
+            
+         },
         {
             attempts: job.maxRetries,
             backoff: {
                 type: "exponential",
                 delay: 2000
             },
+            
             priority: job.priority,
             delay: job.delay || 0,
             removeOnComplete: false,
