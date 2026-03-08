@@ -8,11 +8,8 @@ services:
       - "2405:2405"
     depends_on:
       - redis
-      - mongo
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - MONGODB_URI=mongodb://mongo:27017/Queue
+    env_file:
+      - ./server/.env
 
   worker:
     build:
@@ -20,18 +17,10 @@ services:
       dockerfile: DockerFile.worker
     depends_on:
       - redis
-      - mongo
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - MONGODB_URI=mongodb://mongo:27017/Queue
+    env_file:
+      - ./server/.env
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
-
-  mongo:
-    image: mongo:7
-    ports:
-      - "27017:27017"

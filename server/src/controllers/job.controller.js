@@ -68,6 +68,7 @@ const getJob = asyncHandler(async (req, res) => {
         jobId: job._id,
         status: job.status,
         delay: job.delay,
+        priority: job.priority,
         retryCount: job.retryCount,
         errorLogs: job.errorLogs,
         createdAt: job.createdAt,
