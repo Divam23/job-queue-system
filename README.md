@@ -150,9 +150,13 @@ Run entire system: ```docker-compose up --build```
 Scale workers: ```docker-compose up --scale worker=4```
 
 <h3>Job Lifecycle</h3>
-```
-PENDING → PROCESSING → COMPLETED
-                ↘ FAILED
+
+```js
+PENDING
+  ↓
+PROCESSING
+  ├─→ COMPLETED
+  └─→ FAILED
 ```
 
 ## Environment (example)
